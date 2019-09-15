@@ -1,0 +1,251 @@
+conky.config = {
+-- if monitoring a VPN curl and geoiplookup are required 
+
+    -- placement
+    alignment = 'top_left',
+    gap_x = 15,
+    gap_y = 25,
+    minimum_width = 1910,
+
+    use_xft = true,
+    xftalpha = 0.8,
+    update_interval = 2.0,
+    total_run_times = 0,
+    own_window = true,
+    own_window_argb_visual = true,
+
+--  requires a compositor
+--    own_window_transparent = true,
+
+--  or for some background contrast
+    own_window_argb_value = 100,
+    own_window_colour = '#000000',
+    own_window_type = 'dock',
+
+    own_window_hints = 'undecorated,below,sticky,skip_taskbar,skip_pager',
+    own_window_class = 'pibar-conky',
+    background = false,
+    double_buffer = true,
+    imlib_cache_size = 0,
+    no_buffers = true,
+    uppercase = false,
+    cpu_avg_samples = 2,
+    override_utf8_locale = true,
+    top_name_width = 9,
+    pad_percents = 3,
+
+    -- default drawing
+    draw_shades = false,
+    draw_outline = false,
+    draw_borders = false,
+    draw_graph_borders = true,
+    default_bar_width = 60, 
+    default_bar_height = 7,
+
+    -- colors
+    default_color = 'grey90',
+    --   blue          LOW
+    color1 = '2E90FF',
+    --   cyan
+    color2 = '0CA7B7',
+    --   teal
+    color3 = '0AAEC1',
+    --   pale green
+    color4 = '12B87F',
+    --   mustard       MEDIUM
+    color5 = 'A2BE06',
+    --   golden
+    color6 = 'BEBF08',
+    --   bronze
+    color7 = 'B68708',
+    --   rust
+    color8 = 'BD4606',
+    --   red           HIGH
+    color9 = 'BD4606',
+
+    -- font
+    font = 'Liberation Sans:size=10',
+
+    -- layouting
+    top_name_width = 10,
+
+    lua_load = '~/.conky/pibar-bargraph.lua',
+    lua_draw_hook_pre = 'main_bars',
+
+};
+
+conky.text = [[
+ ${goto 0}\
+${nodename}\
+ ${if_match ${acpitemp} < 52}${color1}${else}\
+ ${if_match ${acpitemp} < 56}${color2}${else}\
+ ${if_match ${acpitemp} < 60}${color3}${else}\
+ ${if_match ${acpitemp} < 64}${color4}${else}\
+ ${if_match ${acpitemp} < 68}${color5}${else}\
+ ${if_match ${acpitemp} < 72}${color6}${else}\
+ ${if_match ${acpitemp} < 76}${color7}${else}\
+ ${if_match ${acpitemp} < 80}${color8}${else}\
+ ${color9}${endif}${endif}${endif}${endif}${endif}${endif}${endif}${endif}\
+ ${font 'Liberation Sans:size=11:bold'}\
+ ${voffset -1}${goto 45}\
+${acpitemp}°\
+ ${color}\
+ ${font}\
+ ${goto 84}\
+Up ${uptime_short}\
+ ${goto 170}\
+MEM ${memperc}%\
+\
+ ${goto 310}\
+Swp ${swapperc}%\
+\
+ ${goto 440}\
+↑ ${diskio_read}\
+ ${goto 510}\
+↓ ${diskio_write}\
+\
+	${if_up tun0}\
+\
+  ${goto 580}\
+↑ ${upspeed tun0}\
+  ${goto 645}\
+↓ ${downspeed tun0}\
+  ${color BEBF08}\
+  ${font 'Liberation Sans:size=10:bold'}\
+  ${goto 735}\
+${execi 10 curl -s -4 ifconfig.co | xargs geoiplookup | awk '{print $NF}'| cut -c -7}\
+  ${color}\
+  ${font}\
+\
+	${else}${if_up eth0}\
+\
+  ${goto 580}\
+↑\
+ ${upspeed eth0}\
+  ${goto 645}\
+↓\
+ ${downspeed eth0}\
+\
+	${else}${if_up wlan0}\
+ \
+  ${goto 580}\
+↑ ${upspeed wlan0}\
+  ${goto 645}\
+↓ ${downspeed wlan0}\
+ \
+	${endif}${endif}${endif}\
+ \
+ ${if_match "${loadavg 1}" < "1"}${color1}${else}\
+ ${if_match "${loadavg 1}" < "1.5"}${color3}${else}\
+ ${if_match "${loadavg 1}" < "2.5"}${color5}${else}\
+ ${if_match "${loadavg 1}" < "4"}${color7}${else}\
+ ${color9}${endif}${endif}${endif}${endif}\
+ ${goto 800}\
+${loadavg 1}\
+ \
+ ${if_match "${loadavg 2}" < "1"}${color1}${else}\
+ ${if_match "${loadavg 2}" < "1.5"}${color3}${else}\
+ ${if_match "${loadavg 2}" < "2.5"}${color5}${else}\
+ ${if_match "${loadavg 2}" < "4"}${color7}${else}\
+ ${color9}${endif}${endif}${endif}${endif}\
+ ${goto 840}\
+${loadavg 2}\
+ \
+ ${if_match "${loadavg 3}" < "1"}${color1}${else}\
+ ${if_match "${loadavg 3}" < "1.5"}${color3}${else}\
+ ${if_match "${loadavg 3}" < "2.5"}${color5}${else}\
+ ${if_match "${loadavg 3}" < "4"}${color7}${else}\
+ ${color9}${endif}${endif}${endif}${endif}\
+ ${goto 875}\
+${loadavg 3}\
+ ${color}\
+ \
+ ${goto 912}\
+Cpu\
+ ${goto 1010}\
+${cpu cpu1}%\
+ ${goto 1120}\
+${cpu cpu2}%\
+ ${goto 1230}\
+${cpu cpu3}%\
+ ${goto 1340}\
+${cpu cpu4}%\
+ \
+ ${if_match ${top cpu 1} < 1}\
+  ${color1}\
+ ${else}\
+ ${if_match ${top cpu 1} < 4}\
+  ${color3}\
+ ${else}\
+ ${if_match ${top cpu 1} < 6}\
+  ${color5}\
+ ${else}\
+ ${if_match ${top cpu 1} < 8}\
+  ${color7}\
+ ${else}\
+ ${if_match ${top cpu 1} < 10}\
+  ${color8}\
+ ${else}\
+  ${color9}\
+  ${font Liberation Sans:size=10:bold}\
+ ${endif}${endif}${endif}${endif}${endif}\
+ ${goto 1385}\
+${top name 1}\
+${top mem 1}\
+${top cpu 1}\
+\
+ ${if_match ${top cpu 2} < 1}\
+  ${color1}\
+ ${else}\
+ ${if_match ${top cpu 2} < 4}\
+  ${color3}\
+ ${else}\
+ ${if_match ${top cpu 2} < 6}\
+  ${color5}\
+ ${else}\
+ ${if_match ${top cpu 2} < 8}\
+  ${color7}\
+ ${else}\
+ ${if_match ${top cpu 2} < 30}\
+  ${color8}\
+ ${else}\
+  ${color9}\
+  ${font Liberation Sans:size=10:bold}\
+ ${endif}${endif}${endif}${endif}${endif}\
+ ${goto 1535}\
+${top name 2}\
+${top mem 2}\
+${top cpu 2}\
+ ${if_match ${top cpu 2} >= 10}${voffset -1}${font}${endif}\
+ \
+ ${if_match ${top cpu 3} < 1}\
+  ${color1}\
+ ${else}\
+ ${if_match ${top cpu 3} < 4}\
+  ${color3}\
+ ${else}\
+ ${if_match ${top cpu 3} < 6}\
+  ${color5}\
+ ${else}\
+ ${if_match ${top cpu 3} < 8}\
+  ${color7}\
+ ${else}\
+ ${if_match ${top cpu 3} < 10}\
+  ${color8}\
+ ${else}\
+  ${color9}\
+  ${font Liberation Sans:size=10:bold}\
+ ${endif}${endif}${endif}${endif}${endif}\
+${goto 1685}\
+${top name 3}\
+${top mem 3}\
+${top cpu 3}\
+ ${if_match ${top cpu 3} < 10}${voffset -1}${font}${endif}\
+ \
+ ${if_match ${freq} < 601}${color3}${else}\
+ ${if_match ${acpitemp} < 70}${color5}${else}\
+ ${color9}\
+ ${endif}${endif}\
+ ${goto 1840}\
+${freq_g}GHz\
+]];
